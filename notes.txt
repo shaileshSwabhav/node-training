@@ -1,0 +1,10 @@
+NODE_ENV=production npm install
+
+
+- create objects in controller
+- do data validation in controller
+- if everthing is fine pass that object to service else return error response
+- do db level validations in service
+- if everything is fine call the method for the object in service else throw/return error response
+- object will perform add/update/delete operation
+
