@@ -6,8 +6,8 @@ const errorHandlerMiddleware = require("./middleware/errorHandlerMiddleware")
 
 const app = express()
 
-const { createUser, getUser } = require("./controller/user")
-const JwtToken = require("./middleware/Jwt")
+const { guardedRouter, unguardedRouter } = require("./components")
+const notFoundMiddleware = require("./middleware/notFound")
 
 var whitelist = ['http://example1.com', 'http://example2.com']
 var corsOptions = {
@@ -28,31 +28,10 @@ app.use(express.json())
 app.use(cors(corsOptions2))
 app.use(cookieParser())
 
-
-app.post("/user", createUser)
-
-// app.use(JwtToken.verifyJwt)
-
-// app.use("aosdqw", JwtToken.verifyJwt, guardedrouter)
-// app.use("aosdqw", unguardedrouter)
-
-
-app.get("/user/getall", getUser, () => { })
-app.get("/user/:userId", getUser)
-
-app.get("/", (req, res, next) => {
-  console.log("inside / route")
-  next()
-  res.send("Hello world!!!")
-}, () => {
-  console.log(" ============= next called ============= ");
-})
+app.use("/api/v1", guardedRouter, unguardedRouter)
 
 app.use(errorHandlerMiddleware)
-app.use("*", (req, res) => {
-  // not found
-  res.status(404).json()
-})
+app.use(notFoundMiddleware)
 
 const PORT = process.env.PORT || 5000
 

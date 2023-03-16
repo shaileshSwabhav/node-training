@@ -1,6 +1,7 @@
-const { User } = require("../views/user")
+const { User } = require("../../../views/user")
 const { createUser: createUserService, getUser: getUserService } = require("../service/user")
-const JwtToken = require("../middleware/Jwt")
+const JwtToken = require("../../../middleware/Jwt")
+const { StatusCodes } = require('http-status-codes')
 
 
 const createUser = (req, res, next) => {
@@ -8,9 +9,7 @@ const createUser = (req, res, next) => {
     console.log("inside /user route", req.body)
 
     const { firstName, lastName, email, password } = req.body
-
     const user = new User(firstName, lastName, email, password)
-    // firstName -> should not have numbers
 
     createUserService(user)
 
@@ -18,22 +17,23 @@ const createUser = (req, res, next) => {
     const token = jwt.generateToken()
 
     res.cookie("authorization", token)
-    res.send("Hello world!!!")
+    res.status(StatusCodes.CREATED).send(null)
   } catch (error) {
     console.error(error);
     next(error)
   }
 }
 
-// const getUser = (req, res) => {
-//   const users = getUserService()
-//   res.send(users)
-// }
-
-function getUser(req, res) {
-  console.log(req.params);
-  const users = getUserService()
-  res.send(users)
+async function getUser(req, res) {
+  try {
+    console.log(req.params);
+    const users = await getUserService()
+    res.status(StatusCodes.OK).json(users)
+  } catch (error) {
+    console.log("error in controller");
+    console.error(error);
+    next(error)
+  }
 }
 
 module.exports = { createUser, getUser }

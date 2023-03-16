@@ -1,6 +1,8 @@
 
 const users = []
 
+const db = require("../models")
+
 class User {
   constructor(firstName, lastName, email, password) {
     this.firstName = firstName
@@ -13,22 +15,36 @@ class User {
     this.id = id
   }
 
-  createUser() {
+  async createUser(transaction) {
     console.log(this)
     if (!this.id) {
       this.id = users.length + 1
     }
-    users.push({
-      id: this.id,
+    // users.push({
+    //   id: this.id,
+    //   firstName: this.firstName,
+    //   lastName: this.lastName,
+    //   email: this.email,
+    //   password: this.password,
+    // })
+
+    // add to db
+    const user = await db.User.create({
       firstName: this.firstName,
       lastName: this.lastName,
       email: this.email,
       password: this.password,
+    }, {
+      transaction: transaction
     })
+
+    console.log("users's auto-generated ID:", user.id);
   }
 
-  static getUsers() {
-    return users
+  static async getUsers() {
+    const newUsers = await db.User.findAll()
+    console.log(newUsers);
+    return newUsers
   }
 
 }
